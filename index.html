@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>FTVScore — Placar & Ranking de FuteVôlei</title>
+  <meta name="description" content="App gratuito para organizar partidas, rodízio e ranking de futevôlei">
+  <meta name="theme-color" content="#071e34">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="demo-banner" style="background:#f5c518;color:#1a1a1a;text-align:center;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:0.05em;position:sticky;top:0;z-index:9999;border-bottom:2px solid #c9a200;">
+  ⚠️ VERSÃO DEMO — dados de teste, não representam um torneio real
+</div>
+
+<div class="app">
+
+  <div class="app-header"><img src="logo.png" alt="Peladeiros FTV" class="main-logo"></div>
+
+  <div class="nav">
+    <button class="nav-tab active" id="tab0" onclick="goTab(0)">⚙ Setup</button>
+    <button class="nav-tab"        id="tab1" onclick="goTab(1)">⚽ Torneio</button>
+    <button class="nav-tab"        id="tab2" onclick="goTab(2)">🏆 Ranking</button>
+    <button class="nav-tab"        id="tab3" onclick="goTab(3)">📋 Histórico</button>
+    <button class="nav-tab"        id="tab4" onclick="goTab(4)">👥 Duplas</button>
+    <button class="nav-tab"        id="tab5" onclick="goTab(5)">☁️ Torneios</button>
+  </div>
+
+  <!-- ════ TELA 0: SETUP ════ -->
+  <div class="screen active" id="screen-0">
+    <div class="config-card">
+      <div class="section-title">⚙ Configuração</div>
+
+      <!-- Data e nome do evento -->
+      <div class="config-row" style="flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:18px;">
+        <div class="config-label">📅 Data & Nome do Evento</div>
+        <div class="event-fields">
+          <input class="form-input" type="date" id="cfgDate">
+          <div class="arena-field-wrap">
+            <input class="form-input" type="text" id="cfgEventName" placeholder="Ex: Pelada da Praia · Boa Viagem" maxlength="40">
+            <button class="arena-pick-btn" onclick="toggleArenaDropdown(event)" title="Selecionar arena">🏟️</button>
+            <div class="arena-dropdown" id="arenaDropdown">
+              <div class="arena-drop-header">
+                <span class="arena-drop-title">Selecionar arena</span>
+                <button class="arena-drop-close" onclick="closeArenaDropdown(event)" title="Fechar">✕</button>
+              </div>
+              <div class="arena-drop-list" id="arenaDropList"></div>
+              <div class="arena-drop-divider"></div>
+              <button class="arena-drop-suggest" onclick="openSuggestArena()">➕ Sugerir arena</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-row">
+        <div class="config-label">
+          Total de Duplas
+          <strong id="lblDuplas">6 duplas · Fase 1 com 15 partidas</strong>
+        </div>
+        <div class="stepper">
+          <button class="step-btn" onclick="stepDuplas(-1)">−</button>
+          <div class="step-val" id="stepDuplas">6</div>
+          <button class="step-btn" onclick="stepDuplas(1)">+</button>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:16px;" id="streakSection" style="display:none">
+        <div class="config-label">Vitórias seguidas para sair da quadra</div>
+        <div class="tog-group">
+          <button class="tog-btn sel" data-s="2" onclick="selStreak(2)">2×</button>
+          <button class="tog-btn"     data-s="3" onclick="selStreak(3)">3×</button>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:16px;">
+        <div class="config-row">
+          <div class="config-label">↔ Trocar de lado a cada 5 pontos?</div>
+          <div class="tog-group">
+            <button class="tog-btn" id="trocaLadoSim" onclick="setTrocaLado(true)">Sim</button>
+            <button class="tog-btn sel" id="trocaLadoNao" onclick="setTrocaLado(false)">Não</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:16px;">
+        <div class="info-box" id="infoBox">
+          ⚽ <strong id="infoN">6 duplas</strong> →
+          <span id="infoDesc">rodada inicial: <strong id="infoRodadaPairs">3 jogos</strong> em sequência (D1×D2, D3×D4, D5×D6). Depois: <strong>ganhou ou perdeu, sai da quadra</strong> — sempre entram as 2 próximas da fila. Espera máx.: <strong id="infoWait">~3 jogos</strong>.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="config-card">
+      <div class="section-title">👥 Duplas</div>
+      <div class="duplas-grid" id="duplasGrid"></div>
+    </div>
+
+    <button class="btn-start" onclick="startTorneio()">▶ INICIAR TORNEIO</button>
+
+    <!-- Zerar torneio em andamento -->
+    <div id="resetSection" style="margin-top:10px;">
+      <button class="btn-reset" onclick="confirmReset()">
+        🗑 Zerar torneio em andamento
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ TELA 1: TORNEIO ════ -->
+  <div class="screen" id="screen-1">
+
+    <!-- Barra do evento -->
+    <div class="event-bar" id="eventBar" style="display:none">
+      <span class="event-bar-icon">🏖️</span>
+      <div class="event-bar-info">
+        <div class="event-bar-name" id="eventBarName"></div>
+        <div class="event-bar-date" id="eventBarDate"></div>
+      </div>
+      <button class="event-bar-reset" onclick="confirmReset()" title="Zerar torneio">🗑</button>
+    </div>
+
+    <!-- Botão zerar — sempre visível na tela do torneio -->
+    <div class="reset-bar" id="resetBar">
+      <button class="btn-reset-inline" onclick="confirmReset()">🗑 Zerar torneio</button>
+    </div>
+
+    <!-- Progress + timer geral -->
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressTxt">0 de 15 partidas</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="torneio-timer-row">
+        <span class="tt-label">⏱ Torneio em andamento</span>
+        <span class="tt-val" id="torneioTimer">00:00:00</span>
+      </div>
+    </div>
+
+    <!-- Fila (só aparece na Fase 1) -->
+    <div class="fila-section" id="filaSection">
+      <div class="fila-title">📋 Fila de Duplas</div>
+      <div class="fila-chips" id="filaChips"></div>
+    </div>
+
+    <!-- ── PARTIDA ATUAL ── -->
+    <div id="matchArea">
+      <div class="fase-tag fase1" id="faseTag">🏁 FASE 1 — Todos contra Todos</div>
+
+      <div class="match-card">
+        <div class="match-header">
+          <div class="mh-left">
+            <div class="match-num"     id="matchNum">Partida 1</div>
+            <div class="match-context" id="matchContext"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
+            <div class="mh-badges"   id="matchBadges"></div>
+            <div class="match-timer" id="matchTimer">⏱ 00:00</div>
+          </div>
+        </div>
+
+        <!-- Overlay de START — aparece antes de iniciar -->
+        <div class="match-start-overlay" id="matchStartOverlay" onclick="startMatch()">
+          <button class="match-start-btn" onclick="startMatch()">
+            ▶ INICIAR PARTIDA
+          </button>
+          <div class="match-start-sub">Toque para começar e iniciar o cronômetro</div>
+        </div>
+
+        <!-- Zona de placar — desabilitada até apertar START -->
+        <div id="scoreZone" style="opacity:0.3;pointer-events:none;">
+          <div class="score-area">
+            <div class="ts a">
+              <div id="mnA"></div>
+              <div class="score-num" id="snA" onclick="addScore('a')">0</div>
+              <div class="sc-btns">
+                <button class="sc-btn plus"  onclick="addScore('a')">+1</button>
+                <button class="sc-btn minus" onclick="subScore('a')">−</button>
+              </div>
+            </div>
+            <div class="mid-div"><div class="vs">VS</div></div>
+            <div class="ts b">
+              <div id="mnB"></div>
+              <div class="score-num" id="snB" onclick="addScore('b')">0</div>
+              <div class="sc-btns">
+                <button class="sc-btn plus"  onclick="addScore('b')">+1</button>
+                <button class="sc-btn minus" onclick="subScore('b')">−</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="finish-btn" id="finishBtn" style="display:none" onclick="openFinish()">✓ FINALIZAR PARTIDA</button>
+      </div>
+
+      <div class="hint">Toque no número ou +1 para pontuar</div>
+      <button class="pull-btn" id="pullBtn" onclick="openPullMatch()">⚡ Puxar outro jogo agora</button>
+      <button class="escalacao-btn" id="escalacaoBtn" onclick="openEscalacao()">📋 Escalação Livre</button>
+      <button class="end-torneio-btn" id="endTorneioBtn" onclick="confirmarEncerrarTorneio()">🏆 Terminar Campeonato</button>
+
+      <div class="proximas-card" id="proximasCard">
+        <div class="prox-title">⏭ Próximas partidas previstas</div>
+        <div id="proximasList"></div>
+      </div>
+    </div>
+
+    <!-- ── FIM DA FASE 1 ── -->
+    <div id="fase1End" style="display:none;">
+      <div class="fase-end-card">
+        <div class="fe-icon">🏁</div>
+        <h2>Fase 1 Concluída!</h2>
+        <p>Todas as duplas jogaram contra todas.<br>Confira o ranking e decida o que fazer!</p>
+
+        <!-- Ranking inline por jogador -->
+        <div class="ranking-table" style="margin:16px 0;">
+          <div class="rt-head rt-row-player">
+            <span>#</span><span>Jogador</span>
+            <span>J</span><span>V</span><span>D</span><span>Saldo</span><span>Pts</span>
+          </div>
+          <div id="rankingF1"></div>
+        </div>
+
+        <div class="fe-buttons">
+          <button class="fe-btn primary" onclick="openFase2Builder()">
+            ⚡ Continuar com Fase 2
+          </button>
+          <button class="fe-btn danger" onclick="encerrarTorneio()">
+            🏆 Encerrar Torneio
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONSTRUTOR DA FASE 2 ── -->
+    <div id="fase2Builder" style="display:none;">
+      <div class="fase-end-card">
+        <div class="fe-icon">⚡</div>
+        <h2>Fase 2 — Monte as Partidas</h2>
+        <p>Selecione as duplas para cada confronto na ordem que quiser jogar.</p>
+
+        <!-- Seletor de duplas -->
+        <div class="f2-selector-wrap">
+          <div class="f2-sel-label">Selecione as duplas do próximo confronto:</div>
+          <div class="f2-dupla-grid" id="f2Selector"></div>
+          <div id="f2Preview"></div>
+        </div>
+
+        <!-- Lista de partidas montadas -->
+        <div class="f2-list-title">
+          Partidas montadas: <span id="f2MatchCount">0</span>
+        </div>
+        <div id="f2MatchList"></div>
+
+        <div class="fe-buttons" style="margin-top:16px;">
+          <button class="fe-btn primary"   onclick="startFase2()">
+            ▶ Iniciar Fase 2
+          </button>
+          <button class="fe-btn secondary" onclick="showFase1End()">
+            ← Voltar
+          </button>
+          <button class="fe-btn danger"    onclick="encerrarTorneio()">
+            🏆 Encerrar Torneio
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAUSA ENTRE LOTES DA FASE 2 ── -->
+    <div id="fase2Paused" style="display:none;">
+      <div class="fase-end-card">
+        <div class="fe-icon">⏸</div>
+        <h2>Lote Concluído!</h2>
+        <p>Fase 2 · <span id="f2pDone">0</span> de <span id="f2pTotal">0</span> partidas jogadas</p>
+
+        <!-- Ranking inline por jogador -->
+        <div class="ranking-table" style="margin:16px 0;">
+          <div class="rt-head rt-row-player">
+            <span>#</span><span>Jogador</span>
+            <span>J</span><span>V</span><span>D</span><span>Saldo</span><span>Pts</span>
+          </div>
+          <div id="rankingF2Paused"></div>
+        </div>
+
+        <div class="fe-buttons">
+          <button class="fe-btn primary" onclick="adicionarMaisPartidas()">
+            + Adicionar Mais Partidas
+          </button>
+          <button class="fe-btn danger"  onclick="encerrarTorneio()">
+            🏆 Encerrar Torneio
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TORNEIO ENCERRADO ── -->
+    <div id="torneioEnd" style="display:none;">
+
+      <!-- Header -->
+      <div class="te-header">
+        <div class="te-trophy">🏆</div>
+        <h1 class="te-title">Torneio Encerrado!</h1>
+        <div class="te-event-info" id="teEventInfo"></div>
+        <div class="te-save-badge" id="teSaveBadge" style="display:none"></div>
+        <div class="te-stats-row">
+          <div class="te-stat"><span id="teTotal">0</span><small>partidas</small></div>
+          <div class="te-stat"><span id="teDuracao">00:00:00</span><small>duração</small></div>
+          <div class="te-stat"><span id="teMedia">00:00</span><small>média/jogo</small></div>
+        </div>
+      </div>
+
+      <!-- Pódio top 3 -->
+      <div class="te-podio">
+        <div class="te-podio-slot segundo" id="podio2">
+          <div class="te-podio-medal">🥈</div>
+          <div class="te-podio-name" id="podio2Name"></div>
+          <div class="te-podio-pts" id="podio2Pts"></div>
+          <div class="te-podio-bar p2"></div>
+        </div>
+        <div class="te-podio-slot primeiro" id="podio1">
+          <div class="te-podio-crown">👑</div>
+          <div class="te-podio-medal">🥇</div>
+          <div class="te-podio-name" id="podio1Name"></div>
+          <div class="te-podio-pts" id="podio1Pts"></div>
+          <div class="te-podio-bar p1"></div>
+        </div>
+        <div class="te-podio-slot terceiro" id="podio3">
+          <div class="te-podio-medal">🥉</div>
+          <div class="te-podio-name" id="podio3Name"></div>
+          <div class="te-podio-pts" id="podio3Pts"></div>
+          <div class="te-podio-bar p3"></div>
+        </div>
+      </div>
+
+      <!-- Destaques -->
+      <div class="te-destaques">
+        <div class="te-section-title">⚡ Destaques do Dia</div>
+        <div class="te-destaques-grid" id="teDestaquesGrid"></div>
+      </div>
+
+      <!-- Ranking completo por jogador -->
+      <div class="te-ranking-full">
+        <div class="te-section-title">📊 Ranking Completo</div>
+        <div class="ranking-table">
+          <div class="rt-head rt-row-player">
+            <span>#</span><span>Jogador</span>
+            <span>J</span><span>V</span><span>D</span><span>Saldo</span><span>Pts</span>
+          </div>
+          <div id="teRankingBody"></div>
+        </div>
+      </div>
+
+      <!-- Ações -->
+      <div class="te-actions">
+        <button class="fe-btn secondary" onclick="gerarCardInstagram()">📸 Gerar card para Instagram</button>
+        <button class="fe-btn primary" onclick="novoTorneio()">⚽ Novo Torneio</button>
+      </div>
+
+    </div>
+
+  </div><!-- /screen-1 -->
+
+  <!-- ════ TELA 2: RANKING ════ -->
+  <div class="screen" id="screen-2">
+    <div class="section-title">🏆 Classificação</div>
+
+    <!-- Toggle por jogador / por dupla -->
+    <div class="rank-toggle">
+      <button class="rank-tog-btn active" id="rankTogPlayer" onclick="setRankView('player')">👤 Por Jogador</button>
+      <button class="rank-tog-btn"        id="rankTogDupla"  onclick="setRankView('dupla')">👥 Por Dupla</button>
+    </div>
+
+    <!-- Ranking por JOGADOR -->
+    <div id="rankViewPlayer">
+      <div class="ranking-table">
+        <div class="rt-head rth-player">
+          <span>#</span><span>Jogador</span>
+          <span>J</span><span>V</span><span>D</span><span>Saldo</span><span>Pts</span>
+        </div>
+        <div id="rankingPlayerBody"></div>
+      </div>
+      <div class="rank-legend">
+        J=Jogos · V=Vitórias · D=Derrotas · Saldo=diferença de pontos · Pts=V×3<br>
+        <span style="color:rgba(116,185,255,.6)">Stats acumulados de todas as duplas que o jogador participou</span>
+      </div>
+    </div>
+
+    <!-- Ranking por DUPLA -->
+    <div id="rankViewDupla" style="display:none">
+      <div class="ranking-table">
+        <div class="rt-head">
+          <span>#</span><span>Dupla</span>
+          <span>J</span><span>V</span><span>D</span><span>Saldo</span><span>Pts</span>
+        </div>
+        <div id="rankingBody"></div>
+      </div>
+      <div class="rank-legend">
+        J=Jogos · V=Vitórias · D=Derrotas · Saldo=diferença de pontos · Pts=V×3
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ TELA 3: HISTÓRICO ════ -->
+  <div class="screen" id="screen-3">
+    <div class="section-title">📋 Histórico</div>
+    <div class="hist-list" id="histList">
+      <div class="empty-hist">Nenhuma partida jogada ainda</div>
+    </div>
+  </div>
+
+  <!-- ════ TELA 4: GERENCIAR DUPLAS ════ -->
+  <div class="screen" id="screen-4">
+    <div class="section-title">👥 Gerenciar Duplas</div>
+
+    <div class="gd-info-box">
+      💡 Aqui você gerencia mudanças durante o torneio: renomear jogadores, remover quem
+      saiu mais cedo, e reorganizar duplas. O histórico de partidas já jogadas nunca é apagado.
+    </div>
+
+    <!-- Lista de duplas -->
+    <div class="gd-section-label">Duplas no torneio</div>
+    <div id="gdDuplasList"></div>
+    <button class="gd-add-btn" onclick="openGdAdd()">➕ Adicionar nova dupla</button>
+
+    <!-- Reorganizar jogadores -->
+    <div class="gd-section-label" style="margin-top:22px;">🔀 Reorganizar jogadores</div>
+    <div class="gd-reorg-info">
+      Selecione um jogador de cada dupla. Você poderá <strong>trocar</strong> os jogadores
+      entre duplas, ou <strong>formar uma nova dupla</strong> com eles
+      (as duplas originais ficam inativas, histórico preservado).
+    </div>
+
+    <!-- Slots de seleção -->
+    <div class="gd-slots-row">
+      <div class="gd-slot" id="gdSlotABox">
+        <div class="gd-slot-label">🟡 Jogador A</div>
+        <div class="gd-slot-val" id="gdSlotA">— selecione —</div>
+      </div>
+      <div class="gd-slot-arrow">↔</div>
+      <div class="gd-slot" id="gdSlotBBox">
+        <div class="gd-slot-label">🔵 Jogador B</div>
+        <div class="gd-slot-val" id="gdSlotB">— selecione —</div>
+      </div>
+    </div>
+
+    <!-- Preview + botões de ação -->
+    <div id="gdSwapPreview" style="display:none"></div>
+    <div id="gdSwapBtns" style="display:none" class="gd-action-btns">
+      <button class="gd-action-btn swap"    onclick="gdDoSwap()">
+        ⇄ Trocar de dupla
+        <span>mantém duplas originais, só troca os nomes</span>
+      </button>
+      <button class="gd-action-btn newdupla" onclick="gdFormNovaDupla()">
+        🆕 Formar nova dupla
+        <span>cria nova dupla com esses dois jogadores</span>
+      </button>
+    </div>
+
+    <!-- Grid de jogadores clicáveis -->
+    <div class="gd-swap-grid" id="gdSwapGrid"></div>
+
+  </div>
+
+  <!-- ════ TELA 5: TORNEIOS ANTERIORES ════ -->
+  <div class="screen" id="screen-5">
+    <div class="section-title">☁️ Torneios Anteriores</div>
+    <div class="th-info">Histórico salvo na nuvem — acessível de qualquer celular.</div>
+    <div id="thLoading" class="th-loading">🔄 Carregando...</div>
+    <div id="thEmpty"   class="th-empty"   style="display:none">Nenhum torneio salvo ainda.</div>
+    <div id="thList"    class="th-list"    style="display:none"></div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- MODAL: EDITAR DUPLA -->
+<div class="modal-bg" id="modalGdEdit">
+  <div class="modal" style="max-width:420px;">
+    <h3 id="gdEditTitle">✏️ Editar Dupla</h3>
+    <div class="modal-sub" id="gdEditStats"></div>
+
+    <div class="gd-edit-section">
+      <div class="gd-edit-label">✏️ Renomear jogadores</div>
+      <div class="gd-edit-row">
+        <input class="form-input" id="gdP1" placeholder="Jogador 1" maxlength="14">
+        <input class="form-input" id="gdP2" placeholder="Jogador 2" maxlength="14">
+      </div>
+      <button class="gd-modal-btn save" onclick="gdSaveNames()">Salvar nomes</button>
+    </div>
+
+    <div class="gd-edit-section" style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px;">
+      <div class="gd-edit-label">Ações</div>
+      <button class="gd-modal-btn remove" id="gdBtnRemove" onclick="gdRemoveDupla()">
+        🚫 Remover dupla — histórico preservado
+      </button>
+      <button class="gd-modal-btn restore" id="gdBtnRestore" onclick="gdRestoreDupla()" style="display:none">
+        ↩ Reativar dupla
+      </button>
+    </div>
+
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="btn-cancel" style="width:100%" onclick="closeModal('modalGdEdit')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADICIONAR DUPLA -->
+<div class="modal-bg" id="modalGdAdd">
+  <div class="modal" style="max-width:420px;">
+    <h3>➕ Nova Dupla</h3>
+    <div class="modal-sub">Entra uma nova dupla no torneio</div>
+
+    <!-- Sugestões de jogadores livres -->
+    <div id="gdFreeAgents" style="display:none"></div>
+
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>Jogador 1</label>
+      <input class="form-input" id="gdNewP1" placeholder="Nome" maxlength="14">
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label>Jogador 2</label>
+      <input class="form-input" id="gdNewP2" placeholder="Nome" maxlength="14">
+    </div>
+
+    <div class="gd-add-note">
+      A nova dupla entra na fila e jogará contra todas as outras.
+    </div>
+
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="btn-cancel" onclick="closeModal('modalGdAdd')">Cancelar</button>
+      <button class="btn-ok"     onclick="gdConfirmAdd()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TROCAR DE LADO -->
+<div class="modal-bg" id="modalTrocaLado">
+  <div class="modal">
+    <h3>↔ Trocar de Lado?</h3>
+    <div class="modal-sub" id="trocaLadoPlacar"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="recusarTrocaLado()">Não, continuar</button>
+      <button class="btn-ok"     onclick="confirmarTrocaLado()">Sim, trocar!</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RESULTADO -->
+<div class="modal-bg" id="modalFinish">
+  <div class="modal">
+    <h3>✓ Resultado Final</h3>
+    <div class="modal-sub" id="modalSub"></div>
+    <div class="modal-score">
+      <div class="modal-team ta">
+        <div class="mn" id="mfnA"></div>
+        <input class="score-inp" id="mfSA" type="number" min="0" max="99" value="0">
+      </div>
+      <div class="modal-x">×</div>
+      <div class="modal-team tb">
+        <div class="mn" id="mfnB"></div>
+        <input class="score-inp" id="mfSB" type="number" min="0" max="99" value="0">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modalFinish')">Cancelar</button>
+      <button class="btn-ok"     onclick="confirmFinish()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PUXAR JOGO -->
+<div class="modal-bg" id="modalPull">
+  <div class="modal" style="max-width:480px;max-height:88vh;overflow-y:auto;">
+    <h3>⚡ Puxar Jogo</h3>
+    <div class="modal-sub" id="modalPullSub">Escolha qual confronto jogar agora:</div>
+    <div id="pullList"></div>
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="btn-cancel" style="width:100%" onclick="closeModal('modalPull')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CRIAR JOGO MANUAL (Fila vazia) -->
+<div class="modal-bg" id="modalCreateMatch">
+  <div class="modal" style="max-width:500px;">
+    <h3>⚡ Criar Nova Partida</h3>
+    <div class="modal-sub">Selecione as duplas para o confronto:</div>
+
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Dupla A</label>
+      <select class="form-input" id="createDuplaA" style="font-size:.9rem;">
+        <option value="">Selecione...</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="margin-bottom:18px;">
+      <label>Dupla B</label>
+      <select class="form-input" id="createDuplaB" style="font-size:.9rem;">
+        <option value="">Selecione...</option>
+      </select>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modalCreateMatch')">Cancelar</button>
+      <button class="btn-ok" onclick="confirmCreateMatch()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ESCALAÇÃO LIVRE -->
+<div class="modal-bg" id="modalEscalacao">
+  <div class="modal" style="max-width:480px;max-height:90vh;overflow-y:auto;">
+    <h3>📋 Escalação Livre</h3>
+    <div class="modal-sub" id="escSub">Toque na 1ª dupla — ela será a Dupla A</div>
+    <div class="esc-legend">
+      <span class="esc-leg-a">■ Dupla A</span>
+      <span class="esc-leg-b">■ Dupla B</span>
+    </div>
+    <div class="esc-grid" id="escGrid"></div>
+    <div class="modal-btns" style="margin-top:16px;">
+      <button class="btn-cancel" style="width:100%" onclick="closeModal('modalEscalacao')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY: CAMPEÃO -->
+<div class="winner-ov" id="winnerOv">
+  <div class="trophy">🏆</div>
+  <div class="w-title">Campeões!</div>
+  <div class="w-names" id="wNames"></div>
+  <div class="w-stats" id="wStats"></div>
+  <button class="w-btn" onclick="closeWinner()">Ver Ranking Final</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     PLACAR FULLSCREEN (landscape celular)
+══════════════════════════════════════ -->
+<div class="fs-overlay" id="fsOverlay">
+
+  <!-- Topo: info da partida + timer + botão fechar -->
+  <div class="fs-top">
+    <div class="fs-match-info">
+      <span class="fs-match-num" id="fsMatchNum">Partida 1</span>
+      <span class="fs-fase-tag" id="fsFaseTag">Fase 1</span>
+    </div>
+    <div class="fs-timer" id="fsTimer">⏱ 00:00</div>
+    <button class="fs-close-btn" onclick="closeFullscreen()" title="Sair do fullscreen">✕</button>
+  </div>
+
+  <!-- Placar principal: 3 colunas lado a lado -->
+  <div class="fs-score-area">
+
+    <!-- DUPLA A — lado esquerdo -->
+    <div class="fs-team fs-team-a">
+      <div class="fs-names" id="fsNamesA"></div>
+      <div class="fs-score" id="fsScoreA" onclick="addScore('a')">0</div>
+      <div class="fs-btns">
+        <button class="fs-btn fs-plus" onclick="addScore('a')">+1</button>
+        <button class="fs-btn fs-minus" onclick="subScore('a')">−</button>
+      </div>
+    </div>
+
+    <!-- CENTRO: VS + finalizar -->
+    <div class="fs-center">
+      <div class="fs-vs">VS</div>
+      <button class="fs-finish-btn" onclick="openFinish()">✓ FIM</button>
+    </div>
+
+    <!-- DUPLA B — lado direito -->
+    <div class="fs-team fs-team-b">
+      <div class="fs-names" id="fsNamesB"></div>
+      <div class="fs-score" id="fsScoreB" onclick="addScore('b')">0</div>
+      <div class="fs-btns">
+        <button class="fs-btn fs-plus" onclick="addScore('b')">+1</button>
+        <button class="fs-btn fs-minus" onclick="subScore('b')">−</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Prompt interno: trocar de lado (visível dentro do fullscreen) -->
+  <div class="fs-swap-prompt" id="fsSwapPrompt">
+    <div class="fs-swap-box">
+      <div class="fs-swap-icon">↔</div>
+      <div class="fs-swap-title">Trocar de Lado?</div>
+      <div class="fs-swap-sub" id="fsSwapSub"></div>
+      <div class="fs-swap-btns">
+        <button class="fs-swap-btn fs-swap-no"  onclick="recusarTrocaLado()">Não</button>
+        <button class="fs-swap-btn fs-swap-yes" onclick="confirmarTrocaLado()">Sim, trocar!</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL: SUGERIR ARENA -->
+<div class="modal-bg" id="modalSuggestArena">
+  <div class="modal" style="max-width:380px;position:relative;">
+    <button class="modal-close-btn" id="btnSuggestArenaClose" title="Fechar">✕</button>
+    <h3>🏟️ Sugerir Arena</h3>
+    <div class="modal-sub">Salva no seu dispositivo para uso futuro</div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>Nome da Arena</label>
+      <input class="form-input" id="suggestArenaName" placeholder="Ex: Arena do Sol" maxlength="40">
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label>Cidade / Bairro</label>
+      <input class="form-input" id="suggestArenaCity" placeholder="Ex: Boa Viagem, Recife" maxlength="40">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="cancelSuggestArena()">Cancelar</button>
+      <button class="btn-ok" onclick="saveSuggestArena()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
