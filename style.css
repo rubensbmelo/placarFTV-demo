@@ -1815,5 +1815,184 @@ body::before{content:'';position:fixed;inset:0;z-index:0;background:
 /* Screen 0 precisa de espaço extra para o botão fixo do stepper */
 #screen-0 { padding-bottom: 80px; }
 
+/* ══════════════════════════════════════════════════════════
+   SPLASH SCREEN / CAPA
+══════════════════════════════════════════════════════════ */
+.splash-ov {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: radial-gradient(ellipse at 50% 30%, #1a3a5a 0%, #0d1b2a 70%);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 32px 32px 0;
+  opacity: 1;
+  transition: opacity .38s ease;
+  overflow: hidden;
+}
+.splash-ov.show { display: flex; }
+.splash-ov.splash-fade-out { opacity: 0; pointer-events: none; }
+
+.splash-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+  flex: 1;
+  justify-content: center;
+  padding-bottom: 24px;
+}
+
+/* Logo */
+.splash-logo-wrap {
+  width: 154px;
+  height: 154px;
+  border-radius: 50%;
+  border: 2.5px solid #D4AF37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 32px rgba(212,175,55,.25), 0 0 0 8px rgba(212,175,55,.06);
+  margin-bottom: 26px;
+  flex-shrink: 0;
+}
+.splash-logo {
+  height: 130px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(212,175,55,.4));
+}
+
+/* Textos */
+.splash-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 6px;
+  color: #fff;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+.splash-subtitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #00CED1;
+  margin-bottom: 24px;
+}
+
+.splash-divider {
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.45), transparent);
+  margin-bottom: 20px;
+}
+
+.splash-desc {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  letter-spacing: .5px;
+  color: #e8eef4;
+  text-align: center;
+  line-height: 1.8;
+  max-width: 260px;
+  margin-bottom: 0;
+  padding-bottom: 32px;
+}
+
+/* Botões */
+.splash-btn-primary {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #D4AF37, #b8922d);
+  color: #060d14;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 20px rgba(212,175,55,.35);
+  margin-bottom: 12px;
+}
+.splash-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(212,175,55,.55);
+}
+.splash-btn-primary:active { transform: scale(.97); }
+
+.splash-btn-secondary {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid rgba(212,175,55,.4);
+  border-radius: 14px;
+  background: transparent;
+  color: #D4AF37;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+  margin-bottom: 0;
+}
+.splash-btn-secondary:hover { background: rgba(212,175,55,.1); border-color: rgba(212,175,55,.7); }
+.splash-btn-secondary:active { transform: scale(.97); }
+
+.splash-footer {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #3a5060;
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* Navbar decorativa na splash (todos inativos) */
+.splash-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 62px;
+  background: #060d14;
+  border-top: 0.5px solid #1a2d3f;
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+.splash-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: #3a5060;
+  padding: 6px 0 12px;
+}
+.splash-nav-item svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.splash-nav-item span {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  line-height: 1;
+}
+
 /* Step arena-section — espaçamento */
 .step-arena-section { margin-bottom: 20px; }

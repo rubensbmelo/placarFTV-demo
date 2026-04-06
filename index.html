@@ -687,6 +687,46 @@
   </div>
 </div>
 
+<!-- OVERLAY: SPLASH / CAPA -->
+<div class="splash-ov" id="splashOv">
+  <div class="splash-inner">
+    <div class="splash-logo-wrap">
+      <img src="logo.png" alt="FTVScore" class="splash-logo">
+    </div>
+    <div class="splash-title">FTVScore</div>
+    <div class="splash-subtitle">Placar &amp; Ranking</div>
+    <div class="splash-divider"></div>
+    <p class="splash-desc">Placar inteligente para suas peladas. Rodízio automático, ranking em tempo real e histórico salvo na nuvem.</p>
+    <button class="splash-btn-primary" onclick="splashStart()">INICIAR NOVO TORNEIO</button>
+    <button class="splash-btn-secondary" onclick="splashRanking()">VER RANKING ATUAL</button>
+    <div class="splash-footer">Login via Google/Instagram em breve</div>
+  </div>
+
+  <!-- Navbar decorativa (todos inativos) -->
+  <div class="splash-nav">
+    <div class="splash-nav-item">
+      <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Setup</span>
+    </div>
+    <div class="splash-nav-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Torneio</span>
+    </div>
+    <div class="splash-nav-item">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Ranking</span>
+    </div>
+    <div class="splash-nav-item">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span>Duplas</span>
+    </div>
+    <div class="splash-nav-item">
+      <svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+      <span>Torneios</span>
+    </div>
+  </div>
+</div>
+
 <!-- OVERLAY: CAMPEÃO -->
 <div class="winner-ov" id="winnerOv">
   <div class="trophy">🏆</div>
@@ -780,6 +820,15 @@
 
 <script src="app.js"></script>
 <script>
+/* ── Splash screen ── */
+function splashDismiss(then) {
+  const ov = document.getElementById('splashOv');
+  ov.classList.add('splash-fade-out');
+  setTimeout(() => { ov.classList.remove('show', 'splash-fade-out'); then(); }, 380);
+}
+function splashStart()   { splashDismiss(() => goTab(0)); }
+function splashRanking() { splashDismiss(() => goTab(2)); }
+
 /* ── Sub-abas do Torneio ── */
 function goTorneioSubTab(name) {
   document.querySelectorAll('.tor-subtab').forEach(b => b.classList.remove('active'));
