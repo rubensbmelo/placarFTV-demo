@@ -177,7 +177,7 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     const s = JSON.parse(raw);
-    numDuplas     = s.numDuplas    ?? 6;
+    numDuplas     = s.numDuplas    ?? 2;
     streakLimit   = s.streakLimit  ?? 2;
     permMode      = s.permMode     ?? 'leave';
     eventDate     = s.eventDate    ?? '';
@@ -219,6 +219,9 @@ function stepDuplas(d) {
 
   const streakSection = document.getElementById('streakSection');
   const infoDesc      = document.getElementById('infoDesc');
+  const infoBox       = document.getElementById('infoBox');
+
+  if (infoBox) infoBox.style.display = numDuplas === 2 ? 'none' : '';
 
   if (numDuplas >= 6) {
     streakSection.style.display = 'none';
@@ -2280,6 +2283,7 @@ if (loadState()) {
   buildDuplasGrid();
   document.getElementById('resetSection').style.display = 'none';
   document.getElementById('cfgDate').value = new Date().toISOString().split('T')[0];
+  stepDuplas(0);
   document.getElementById('splashOv').classList.add('show');
 }
 
