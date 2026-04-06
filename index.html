@@ -6,43 +6,71 @@
   <title>FTVScore — Placar & Ranking de FuteVôlei</title>
   <meta name="description" content="App gratuito para organizar partidas, rodízio e ranking de futevôlei">
   <meta name="theme-color" content="#071e34">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="demo-banner" style="background:#f5c518;color:#1a1a1a;text-align:center;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:0.05em;position:sticky;top:0;z-index:9999;border-bottom:2px solid #c9a200;">
-  ⚠️ VERSÃO DEMO — dados de teste, não representam um torneio real
-</div>
-
 <div class="app">
 
-  <div class="app-header"><img src="logo.png" alt="Peladeiros FTV" class="main-logo"></div>
-
-  <div class="nav">
-    <button class="nav-tab active" id="tab0" onclick="goTab(0)">⚙ Setup</button>
-    <button class="nav-tab"        id="tab1" onclick="goTab(1)">⚽ Torneio</button>
-    <button class="nav-tab"        id="tab2" onclick="goTab(2)">🏆 Ranking</button>
-    <button class="nav-tab"        id="tab3" onclick="goTab(3)">📋 Histórico</button>
-    <button class="nav-tab"        id="tab4" onclick="goTab(4)">👥 Duplas</button>
-    <button class="nav-tab"        id="tab5" onclick="goTab(5)">☁️ Torneios</button>
+  <!-- Header fixo com logo -->
+  <div class="top-header" id="topHeader">
+    <img src="logo.png" alt="FTVScore" class="top-logo">
   </div>
 
-  <!-- ════ TELA 0: SETUP ════ -->
+  <!-- ════ TELA 0: SETUP (STEPPER 3 PASSOS) ════ -->
   <div class="screen active" id="screen-0">
-    <div class="config-card">
-      <div class="section-title">⚙ Configuração</div>
 
-      <!-- Data e nome do evento -->
-      <div class="config-row" style="flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:18px;">
-        <div class="config-label">📅 Data & Nome do Evento</div>
+    <!-- ── PASSO 1: Configurações ── -->
+    <div class="setup-step active" id="stepPanel1">
+      <div class="step-header">
+        <div class="step-title">CONFIGURAÇÃO</div>
+        <div class="step-date-display" id="step1DateDisplay"></div>
+      </div>
+      <div class="step-badge">PASSO 1 DE 3</div>
+
+      <div class="step-summary-card">
+        <div class="step-summary-text" id="lblDuplas">6 DUPLAS · 15 PARTIDAS</div>
+        <div class="stepper">
+          <button class="step-btn" onclick="stepDuplas(-1)">−</button>
+          <div class="step-val" id="stepDuplas">6</div>
+          <button class="step-btn" onclick="stepDuplas(1)">+</button>
+        </div>
+      </div>
+
+      <div class="seg-section" id="streakSection" style="display:none">
+        <div class="seg-label">SAIR DA QUADRA</div>
+        <div class="tog-group">
+          <button class="tog-btn sel" data-s="2"  onclick="selStreak(2)">2×</button>
+          <button class="tog-btn"     data-s="3"  onclick="selStreak(3)">3×</button>
+          <button class="tog-btn"     data-s="99" onclick="selStreak(99)">Livre</button>
+        </div>
+      </div>
+
+      <div class="seg-section seg-section--row">
+        <div class="seg-label">TROCA DE LADO</div>
+        <div class="tog-group tog-group--compact">
+          <button class="tog-btn" id="trocaLadoSim" onclick="setTrocaLado(true)">5 pts</button>
+          <button class="tog-btn sel" id="trocaLadoNao" onclick="setTrocaLado(false)">Não</button>
+        </div>
+      </div>
+
+      <div class="info-box" id="infoBox">
+        ⚽ <strong id="infoN">6 duplas</strong> →
+        <span id="infoDesc">rodada inicial: <strong id="infoRodadaPairs">3 jogos</strong> em sequência (D1×D2, D3×D4, D5×D6). Depois: <strong>ganhou ou perdeu, sai da quadra</strong> — sempre entram as 2 próximas da fila. Espera máx.: <strong id="infoWait">~3 jogos</strong>.</span>
+      </div>
+    </div>
+
+    <!-- ── PASSO 2: Duplas ── -->
+    <div class="setup-step" id="stepPanel2">
+      <button class="setup-back-btn" onclick="goSetupStep(1)">← Voltar</button>
+      <div class="step-badge">PASSO 2 DE 3</div>
+
+      <div class="step-arena-section">
+        <div class="seg-label">DATA & ARENA</div>
         <div class="event-fields">
           <input class="form-input" type="date" id="cfgDate">
           <div class="arena-field-wrap">
@@ -61,60 +89,48 @@
         </div>
       </div>
 
-      <div class="config-row">
-        <div class="config-label">
-          Total de Duplas
-          <strong id="lblDuplas">6 duplas · Fase 1 com 15 partidas</strong>
-        </div>
-        <div class="stepper">
-          <button class="step-btn" onclick="stepDuplas(-1)">−</button>
-          <div class="step-val" id="stepDuplas">6</div>
-          <button class="step-btn" onclick="stepDuplas(1)">+</button>
-        </div>
+      <div class="seg-label" style="margin-bottom:8px">DUPLAS</div>
+      <div class="duplas-grid duplas-grid-light" id="duplasGrid"></div>
+    </div>
+
+    <!-- ── PASSO 3: Revisão ── -->
+    <div class="setup-step" id="stepPanel3">
+      <button class="setup-back-btn" onclick="goSetupStep(2)">← Voltar</button>
+      <div class="step-badge">PASSO 3 DE 3</div>
+      <div class="step-title" style="margin-bottom:16px">REVISÃO</div>
+
+      <div class="review-card">
+        <div id="reviewContent"></div>
       </div>
 
-      <div style="border-top:1px solid var(--border);padding-top:16px;" id="streakSection" style="display:none">
-        <div class="config-label">Vitórias seguidas para sair da quadra</div>
-        <div class="tog-group">
-          <button class="tog-btn sel" data-s="2" onclick="selStreak(2)">2×</button>
-          <button class="tog-btn"     data-s="3" onclick="selStreak(3)">3×</button>
-        </div>
-      </div>
-      <div style="border-top:1px solid var(--border);padding-top:16px;">
-        <div class="config-row">
-          <div class="config-label">↔ Trocar de lado a cada 5 pontos?</div>
-          <div class="tog-group">
-            <button class="tog-btn" id="trocaLadoSim" onclick="setTrocaLado(true)">Sim</button>
-            <button class="tog-btn sel" id="trocaLadoNao" onclick="setTrocaLado(false)">Não</button>
-          </div>
-        </div>
-      </div>
+      <button class="btn-start" onclick="startTorneio()">INICIAR TORNEIO 🏐</button>
 
-      <div style="border-top:1px solid var(--border);padding-top:16px;">
-        <div class="info-box" id="infoBox">
-          ⚽ <strong id="infoN">6 duplas</strong> →
-          <span id="infoDesc">rodada inicial: <strong id="infoRodadaPairs">3 jogos</strong> em sequência (D1×D2, D3×D4, D5×D6). Depois: <strong>ganhou ou perdeu, sai da quadra</strong> — sempre entram as 2 próximas da fila. Espera máx.: <strong id="infoWait">~3 jogos</strong>.</span>
-        </div>
+      <div id="resetSection" style="margin-top:10px;display:none">
+        <button class="btn-reset" onclick="confirmReset()">
+          🗑 Zerar torneio em andamento
+        </button>
       </div>
     </div>
 
-    <div class="config-card">
-      <div class="section-title">👥 Duplas</div>
-      <div class="duplas-grid" id="duplasGrid"></div>
+    <!-- ── Footer de navegação entre steps (fixo, acima da bottom nav) ── -->
+    <div class="setup-nav-footer" id="setupNavFooter">
+      <button class="setup-next-btn" id="setupNextBtn" onclick="setupGoNext()">PRÓXIMO: DEFINIR DUPLAS →</button>
     </div>
 
-    <button class="btn-start" onclick="startTorneio()">▶ INICIAR TORNEIO</button>
-
-    <!-- Zerar torneio em andamento -->
-    <div id="resetSection" style="margin-top:10px;">
-      <button class="btn-reset" onclick="confirmReset()">
-        🗑 Zerar torneio em andamento
-      </button>
-    </div>
   </div>
 
   <!-- ════ TELA 1: TORNEIO ════ -->
   <div class="screen" id="screen-1">
+
+    <!-- Sub-abas -->
+    <div class="torneio-subtabs">
+      <button class="tor-subtab active" id="torTab-placar"    onclick="goTorneioSubTab('placar')">Placar</button>
+      <button class="tor-subtab"        id="torTab-fila"       onclick="goTorneioSubTab('fila')">Fila</button>
+      <button class="tor-subtab"        id="torTab-historico"  onclick="goTorneioSubTab('historico')">Histórico</button>
+    </div>
+
+    <!-- ── Sub: PLACAR ── -->
+    <div class="tor-subcontent active" id="torSub-placar">
 
     <!-- Barra do evento -->
     <div class="event-bar" id="eventBar" style="display:none">
@@ -144,12 +160,6 @@
         <span class="tt-label">⏱ Torneio em andamento</span>
         <span class="tt-val" id="torneioTimer">00:00:00</span>
       </div>
-    </div>
-
-    <!-- Fila (só aparece na Fase 1) -->
-    <div class="fila-section" id="filaSection">
-      <div class="fila-title">📋 Fila de Duplas</div>
-      <div class="fila-chips" id="filaChips"></div>
     </div>
 
     <!-- ── PARTIDA ATUAL ── -->
@@ -366,6 +376,23 @@
 
     </div>
 
+    </div><!-- /torSub-placar -->
+
+    <!-- ── Sub: FILA ── -->
+    <div class="tor-subcontent" id="torSub-fila">
+      <div class="fila-section" id="filaSection">
+        <div class="fila-title">📋 Fila de Duplas</div>
+        <div class="fila-chips" id="filaChips"></div>
+      </div>
+    </div>
+
+    <!-- ── Sub: HISTÓRICO ── -->
+    <div class="tor-subcontent" id="torSub-historico">
+      <div class="hist-list" id="histList">
+        <div class="empty-hist">Nenhuma partida jogada ainda</div>
+      </div>
+    </div>
+
   </div><!-- /screen-1 -->
 
   <!-- ════ TELA 2: RANKING ════ -->
@@ -408,13 +435,8 @@
     </div>
   </div>
 
-  <!-- ════ TELA 3: HISTÓRICO ════ -->
-  <div class="screen" id="screen-3">
-    <div class="section-title">📋 Histórico</div>
-    <div class="hist-list" id="histList">
-      <div class="empty-hist">Nenhuma partida jogada ainda</div>
-    </div>
-  </div>
+  <!-- TELA 3: placeholder (histórico movido para sub-aba do Torneio) -->
+  <div class="screen" id="screen-3"></div>
 
   <!-- ════ TELA 4: GERENCIAR DUPLAS ════ -->
   <div class="screen" id="screen-4">
@@ -477,6 +499,41 @@
     <div id="thEmpty"   class="th-empty"   style="display:none">Nenhum torneio salvo ainda.</div>
     <div id="thList"    class="th-list"    style="display:none"></div>
   </div>
+
+  <!-- ════ BOTTOM NAV ════ -->
+  <nav class="bottom-nav">
+
+    <!-- Setup -->
+    <button class="nav-tab active" id="tab0" onclick="goTab(0)">
+      <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Setup</span>
+    </button>
+
+    <!-- Torneio -->
+    <button class="nav-tab" id="tab1" onclick="goTab(1)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Torneio</span>
+    </button>
+
+    <!-- Ranking -->
+    <button class="nav-tab" id="tab2" onclick="goTab(2)">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Ranking</span>
+    </button>
+
+    <!-- Duplas -->
+    <button class="nav-tab" id="tab4" onclick="goTab(4)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span>Duplas</span>
+    </button>
+
+    <!-- Torneios -->
+    <button class="nav-tab" id="tab5" onclick="goTab(5)">
+      <svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+      <span>Torneios</span>
+    </button>
+
+  </nav>
 
 </div><!-- /app -->
 
@@ -722,5 +779,88 @@
 </div>
 
 <script src="app.js"></script>
+<script>
+/* ── Sub-abas do Torneio ── */
+function goTorneioSubTab(name) {
+  document.querySelectorAll('.tor-subtab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tor-subcontent').forEach(c => c.classList.remove('active'));
+  document.getElementById('torTab-' + name).classList.add('active');
+  document.getElementById('torSub-' + name).classList.add('active');
+  if (name === 'historico') renderHistorico();
+}
+
+/* ── Navegação do Setup Stepper ── */
+function setupGoNext() {
+  const active = document.querySelector('.setup-step.active');
+  const n = parseInt(active.id.replace('stepPanel', ''));
+  if (n < 3) goSetupStep(n + 1);
+}
+
+function goSetupStep(n) {
+  document.querySelectorAll('.setup-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('stepPanel' + n).classList.add('active');
+  const footer = document.getElementById('setupNavFooter');
+  const btn    = document.getElementById('setupNextBtn');
+  if (n === 1) {
+    footer.style.display = 'block';
+    btn.textContent = 'PRÓXIMO: DEFINIR DUPLAS →';
+  } else if (n === 2) {
+    footer.style.display = 'block';
+    btn.textContent = 'PRÓXIMO: REVISAR →';
+  } else {
+    footer.style.display = 'none';
+    renderSetupReview();
+  }
+}
+
+function renderSetupReview() {
+  const total  = typeof numDuplas !== 'undefined' ? numDuplas * (numDuplas - 1) / 2 : '—';
+  const nd     = typeof numDuplas !== 'undefined' ? numDuplas : '—';
+  const arena  = (document.getElementById('cfgEventName').value || '').trim() || '—';
+  const dateRaw = document.getElementById('cfgDate').value;
+  const dateStr = dateRaw
+    ? new Date(dateRaw + 'T12:00').toLocaleDateString('pt-BR')
+    : '—';
+  const sLimit = typeof streakLimit !== 'undefined' ? streakLimit : 2;
+  const tLado  = typeof trocaLado  !== 'undefined' ? trocaLado  : false;
+  const streakTxt = (typeof numDuplas !== 'undefined' && numDuplas <= 4)
+    ? sLimit + '× vitórias seguidas'
+    : 'Rodízio';
+  const ladoTxt = tLado ? 'A cada 5 pts' : 'Não';
+
+  /* Nomes das duplas */
+  const duplaRows = [];
+  const grid = document.getElementById('duplasGrid');
+  if (grid && typeof numDuplas !== 'undefined') {
+    for (let i = 0; i < numDuplas; i++) {
+      const p1El = grid.querySelector('#p1_' + i);
+      const p2El = grid.querySelector('#p2_' + i);
+      const p1 = (p1El && p1El.value.trim()) || ('Jogador ' + (i * 2 + 1));
+      const p2 = (p2El && p2El.value.trim()) || ('Jogador ' + (i * 2 + 2));
+      duplaRows.push(`<div class="review-row">
+        <span class="review-label">D${i + 1}</span>
+        <span class="review-val">${p1} &amp; ${p2}</span>
+      </div>`);
+    }
+  }
+
+  document.getElementById('reviewContent').innerHTML = `
+    <div class="review-row"><span class="review-label">Arena</span><span class="review-val">${arena}</span></div>
+    <div class="review-row"><span class="review-label">Data</span><span class="review-val">${dateStr}</span></div>
+    <div class="review-row"><span class="review-label">Duplas</span><span class="review-val">${nd}</span></div>
+    <div class="review-row"><span class="review-label">Partidas</span><span class="review-val">${total}</span></div>
+    <div class="review-row"><span class="review-label">Sair da quadra</span><span class="review-val">${streakTxt}</span></div>
+    <div class="review-row"><span class="review-label">Troca de lado</span><span class="review-val">${ladoTxt}</span></div>
+    <div class="review-section-title">Duplas</div>
+    ${duplaRows.join('')}
+  `;
+}
+
+/* ── Data no header do passo 1 ── */
+(function() {
+  const el = document.getElementById('step1DateDisplay');
+  if (el) el.textContent = new Date().toLocaleDateString('pt-BR');
+})();
+</script>
 </body>
 </html>

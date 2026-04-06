@@ -1452,3 +1452,368 @@ body::before{content:'';position:fixed;inset:0;z-index:0;background:
   text-transform: uppercase;
   margin-top: 1px;
 }
+
+/* ══════════════════════════════════════════════════════════
+   REDESIGN v2 — TOP HEADER · BOTTOM NAV · SETUP STEPPER
+══════════════════════════════════════════════════════════ */
+
+/* ── Ocultar elementos antigos ── */
+.app-header { display: none !important; }
+.nav        { display: none !important; }
+
+/* ── Top fixed header com logo ── */
+.top-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 400;
+  background: #060d14;
+  border-bottom: 0.5px solid #1a2d3f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 54px;
+}
+.top-logo { height: 40px; width: auto; display: block; }
+
+/* ── App — ajuste de padding para header + bottom nav ── */
+.app { padding: 62px 14px 82px !important; }
+
+/* ── Bottom navigation bar ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 400;
+  background: #060d14;
+  border-top: 0.5px solid #1a2d3f;
+  display: flex;
+  height: 62px;
+}
+.bottom-nav .nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  color: #3a5060;
+  padding: 6px 0 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  transition: color .2s;
+  position: relative;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+.bottom-nav .nav-tab svg {
+  width: 20px; height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.bottom-nav .nav-tab span {
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.bottom-nav .nav-tab.active { color: #D4AF37; }
+.bottom-nav .nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #D4AF37;
+}
+
+/* ── Segmented controls (override tog-group / tog-btn) ── */
+.tog-group {
+  display: flex;
+  background: #c8d4de;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+  margin-top: 0;
+}
+.tog-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #3a4a56;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .95rem;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.tog-btn.sel {
+  background: #D4AF37;
+  color: #060d14;
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+}
+
+/* Ranking toggle — mesmo estilo segmented */
+.rank-toggle {
+  background: #c8d4de;
+  border: none;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 10px;
+}
+.rank-tog-btn {
+  border-radius: 8px;
+  background: transparent;
+  color: #3a4a56;
+  border: none;
+}
+.rank-tog-btn.active {
+  background: #D4AF37;
+  color: #060d14;
+}
+
+/* ── Setup Stepper ── */
+.setup-step { display: none; }
+.setup-step.active { display: block; }
+
+.step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.step-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 4px;
+  color: #fff;
+}
+.step-date-display {
+  font-size: .72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+}
+.step-badge {
+  display: inline-block;
+  background: #D4AF37;
+  color: #060d14;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .78rem;
+  letter-spacing: 2px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
+.step-summary-card {
+  background: #e8eef4;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.step-summary-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 2px;
+  color: #0d1b2a;
+  line-height: 1.35;
+}
+.step-summary-card .stepper .step-btn {
+  background: rgba(13,27,42,.1);
+  border: 1px solid rgba(13,27,42,.2);
+  color: #0d1b2a;
+}
+.step-summary-card .stepper .step-btn:hover {
+  background: rgba(212,175,55,.3);
+  border-color: #D4AF37;
+  color: #0d1b2a;
+}
+.step-summary-card .stepper .step-val {
+  background: rgba(13,27,42,.08);
+  border: 1px solid rgba(13,27,42,.15);
+  border-left: none; border-right: none;
+  color: #0d1b2a;
+}
+.seg-section { margin-bottom: 22px; }
+.seg-section--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.seg-section--row .seg-label { margin-bottom: 0; }
+.seg-label {
+  font-size: .65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.45);
+  margin-bottom: 8px;
+}
+/* Controle compacto: não estica, botões de largura fixa */
+.tog-group--compact {
+  width: auto;
+  flex-shrink: 0;
+}
+.tog-group--compact .tog-btn {
+  flex: none;
+  padding: 8px 16px;
+}
+
+/* ── Setup nav footer fixo (acima da bottom nav) ── */
+.setup-nav-footer {
+  position: fixed;
+  bottom: 62px;
+  left: 0; right: 0;
+  z-index: 350;
+  padding: 14px 16px;
+  background: linear-gradient(to top, #071e34 75%, transparent);
+}
+.setup-next-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #D4AF37, #b8922d);
+  color: #060d14;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: 0 4px 20px rgba(212,175,55,.35);
+  display: block;
+}
+.setup-next-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(212,175,55,.55);
+}
+
+/* Step 2 — dupla rows em fundo claro */
+.duplas-grid-light { gap: 8px; }
+.duplas-grid-light .dupla-row {
+  background: #e8eef4;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.duplas-grid-light .dupla-num { color: #0d1b2a; opacity: .5; }
+.duplas-grid-light .fi {
+  background: rgba(13,27,42,.08);
+  border: 1px solid rgba(13,27,42,.15);
+  color: #0d1b2a;
+}
+.duplas-grid-light .fi::placeholder { color: rgba(13,27,42,.32); }
+.duplas-grid-light .fi:focus {
+  border-color: #D4AF37;
+  background: rgba(212,175,55,.12);
+  color: #0d1b2a;
+}
+
+/* Step 3 — Review card */
+.review-card {
+  background: #e8eef4;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.review-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(13,27,42,.08);
+}
+.review-row:last-child { border-bottom: none; }
+.review-label {
+  font-size: .7rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(13,27,42,.5);
+  flex-shrink: 0;
+}
+.review-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 1.5px;
+  color: #0d1b2a;
+  text-align: right;
+  word-break: break-word;
+}
+.review-section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .85rem;
+  letter-spacing: 3px;
+  color: rgba(13,27,42,.4);
+  margin: 14px 0 6px;
+  text-transform: uppercase;
+}
+
+/* Botão voltar entre steps */
+.setup-back-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.4);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.setup-back-btn:hover { color: rgba(255,255,255,.7); }
+
+/* ── Torneio sub-tabs ── */
+.torneio-subtabs {
+  display: flex;
+  background: rgba(0,0,0,.3);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 3px;
+  border: 1px solid rgba(255,255,255,.07);
+  margin-bottom: 14px;
+}
+.tor-subtab {
+  flex: 1;
+  padding: 8px 4px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(255,255,255,.3);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s;
+}
+.tor-subtab.active {
+  background: linear-gradient(135deg, rgba(212,175,55,.25), rgba(212,175,55,.1));
+  color: #D4AF37;
+  border: 1px solid rgba(212,175,55,.3);
+}
+.tor-subcontent { display: none; }
+.tor-subcontent.active { display: block; }
+
+/* Screen 0 precisa de espaço extra para o botão fixo do stepper */
+#screen-0 { padding-bottom: 80px; }
+
+/* Step arena-section — espaçamento */
+.step-arena-section { margin-bottom: 20px; }
