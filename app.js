@@ -120,7 +120,7 @@ function stopTorneioTimer() {
 // ══════════════════════════════════════════════════════════
 //  ESTADO GLOBAL
 // ══════════════════════════════════════════════════════════
-let numDuplas    = 6;
+let numDuplas    = 2;
 let streakLimit  = 2;
 let permMode     = 'leave';
 let eventDate    = '';
